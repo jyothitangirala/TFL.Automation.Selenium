@@ -9,24 +9,27 @@ using System.Threading.Tasks;
 
 namespace TFL.Automation.PageObjects
 {
-    public class JourneyResultsPage
+    public class JourneyResultsPage : PageBase
     {
+        #region Constants
         private static string fromLocationTxt = "//*[@id='plan-a-journey']/div[1]/div[1]/div[1]/span[2]/strong";
         private static string toLocationTxt = "//*[@id='plan-a-journey']/div[1]/div[1]/div[2]/span[2]/strong";
 
+        #endregion Constants
 
+        #region Controls
+        private static IWebElement FromLocation => FindControlByXPath(fromLocationTxt);
+        private static IWebElement ToLocation => FindControlByXPath(toLocationTxt);
+        #endregion Controls
 
+        #region Verifications
         public static void VerifyResultsdisplayed(string from, string to)
         {
-            IWebElement fromLocation = DriverContext.Instance.FindElement(By.XPath(fromLocationTxt));
-            DriverContext.Wait.Until(ExpectedConditions.TextToBePresentInElement(fromLocation, from));
+            DriverContext.Wait.Until(ExpectedConditions.TextToBePresentInElement(FromLocation, from));
+            FromLocation.Text.ShouldBe(from, "From location in the Journey results is not matching.");
 
-            fromLocation.Text.ShouldBe(from, "From location in the Journey results is not matching.");
-
-            IWebElement toLocation = DriverContext.Instance.FindElement(By.XPath(toLocationTxt));
-            DriverContext.Wait.Until(ExpectedConditions.TextToBePresentInElement(toLocation, to));
-
-            toLocation.Text.ShouldBe(to, "To location in the Journey results is not matching.");
+            DriverContext.Wait.Until(ExpectedConditions.TextToBePresentInElement(ToLocation, to));
+            ToLocation.Text.ShouldBe(to, "To location in the Journey results is not matching.");
 
             DriverContext.Wait.Until(ExpectedConditions.ElementIsVisible(By.ClassName("carousel-wrap")));
             IWebElement resultsGroup = DriverContext.Instance.FindElement(By.ClassName("carousel-wrap"));
@@ -49,6 +52,9 @@ namespace TFL.Automation.PageObjects
 
         }
 
+        #endregion Verifications
+
+        #region Actions
         public static void EditJourney()
         {
             IWebElement editJourney = DriverContext.Instance.FindElement(By.LinkText("Edit journey"));
@@ -62,6 +68,8 @@ namespace TFL.Automation.PageObjects
             var updateJourney = DriverContext.Instance.FindElement(By.Id("plan-journey-button"));
             updateJourney.Click();
         }
+
+        #endregion Actions
     }
-        
-    }
+
+}

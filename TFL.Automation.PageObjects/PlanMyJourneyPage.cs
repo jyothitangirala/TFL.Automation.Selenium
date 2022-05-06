@@ -6,8 +6,11 @@ using Shouldly;
 
 namespace TFL.Automation.PageObjects
 {
-    public class PlanMyJourneyPage
+    public class PlanMyJourneyPage : PageBase
     {
+
+        #region Constants 
+
         private static string inputFromId = "InputFrom";
         private static string inputFromErrorId = "InputFrom-error";
         private const string inputFromValidation="The From field is required.";
@@ -16,86 +19,67 @@ namespace TFL.Automation.PageObjects
         private static string inputToErrorId = "InputTo-error";
         private const string inputToValidation = "The To field is required.";
 
-        private static string planJourneyBtn = "plan-journey-button";
+        private static string recentsXPath = "//*[@id='jp-recent-content-home-']/a";
+        private static string planJourneyBtnId = "plan-journey-button";
 
+        #endregion Constants
+
+        #region Controls
+        private static IWebElement inputFromTxtbx => FindControlById(inputFromId);
+        private static IWebElement inputFromError => FindControlById(inputFromErrorId);
+
+        private static IWebElement inputToTxtbx => FindControlById(inputToId);
+        private static IWebElement inputToError => FindControlById(inputToErrorId);
+
+        private static IWebElement planJourneyBtn => FindControlById(planJourneyBtnId);
+        private static IWebElement recentsBtn => FindControlByLinkText("Recents");
+        private static IWebElement recentJourneys => FindControlByXPath(recentsXPath);
+
+
+        #endregion Controls
+
+        #region Actions
         public static void EnterFromJourneyLocation(string frmLocation)
         {
-            try
-            {
-                DriverContext.Wait.Until(ExpectedConditions.ElementToBeClickable(By.Id(inputFromId)));
-                var inputFromTxtbx = DriverContext.Instance.FindElement(By.Id(inputFromId));
-                ControlExtensions.EnterTextBoxValue(inputFromTxtbx, frmLocation);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception in entering database Name." + ex.Message);
-            }
+            inputFromTxtbx.EnterTextBoxValue(frmLocation);
         }
         public static void EnterToJourneyLocation(string toLocation)
         {
-            try
-            {
-                DriverContext.Wait.Until(ExpectedConditions.ElementToBeClickable(By.Id(inputToId)));
-                var inputToTxtbx = DriverContext.Instance.FindElement(By.Id(inputToId));
-                ControlExtensions.EnterTextBoxValue(inputToTxtbx, toLocation);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception in entering database Name." + ex.Message);
-            }
+            inputToTxtbx.EnterTextBoxValue(toLocation);
         }
 
         public static void ClickonPlanMyJourney()
         {
-            try
-            {
-                DriverContext.Wait.Until(ExpectedConditions.ElementIsVisible(By.Id(planJourneyBtn)));
-                var planmyJourney = DriverContext.Instance.FindElement(By.Id(planJourneyBtn));
-                planmyJourney.Click();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception in finding plan my journey button." + ex.Message);
-            }
+            planJourneyBtn.Click();
         }
 
         public static void ClickonRecents()
         {
-            try
-            {
-                DriverContext.Wait.Until(ExpectedConditions.ElementIsVisible(By.LinkText("Recents")));
-                var recentsBtn = DriverContext.Instance.FindElement(By.LinkText("Recents"));
-                recentsBtn.Click();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception in finding plan my journey button." + ex.Message);
-            }
+           recentsBtn.Click();
         }
 
+        #endregion Actions
+
+        #region Verifications
         public static void VerifyRequiredFieldErrors(bool fromError,bool  toError)
         {
             if (fromError)
             {
-                DriverContext.Wait.Until(ExpectedConditions.ElementIsVisible(By.Id(inputFromErrorId)));
-                var inputError = DriverContext.Instance.FindElement(By.Id(inputFromErrorId));
-                inputError.Displayed.ShouldBe(fromError);
-                inputError.Text.ShouldBe(inputFromValidation, "From Location validation is not s expected.");
+                inputFromError.Displayed.ShouldBe(fromError);
+                inputFromError.Text.ShouldBe(inputFromValidation, "From Location validation is not s expected.");
             }
             if (toError)
             {
-                DriverContext.Wait.Until(ExpectedConditions.ElementIsVisible(By.Id(inputToErrorId)));
-                var inputError = DriverContext.Instance.FindElement(By.Id(inputToErrorId));
-                inputError.Displayed.ShouldBe(toError);
-                inputError.Text.ShouldBe(inputToValidation, "To Location validation is not s expected.");
+                inputToError.Displayed.ShouldBe(toError);
+                inputToError.Text.ShouldBe(inputToValidation, "To Location validation is not s expected.");
             }
         }
 
        public static void VerifyRecentJourneys()
        {
-            IWebElement recentResults = DriverContext.Instance.FindElement(By.XPath("//*[@id='jp-recent-content-home-']/a"));
-            recentResults?.Displayed.ShouldBeTrue();
+            recentJourneys?.Displayed.ShouldBeTrue();
         }
 
+        #endregion Verifications
     }
 }
